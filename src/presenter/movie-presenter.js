@@ -8,6 +8,8 @@ const PopupState = {
   OPENED: 'OPENED',
 };
 
+let globalPopupState = 'CLOSED'
+
 export default class MoviePresenter {
   #popupComponent = null;
   #filmCardComponent = null;
@@ -36,11 +38,11 @@ export default class MoviePresenter {
     }
   };
 
-  #handleFavoriteClick = (updateType) => {
+  #handleFavoriteClick = () => {
     this.#scrollPosition = this.#popupComponent.element.scrollTop;
     this.#handleDataChange(
       UserAction.UPDATE_MOVIE,
-      updateType,
+      globalPopupState !== PopupState.CLOSED ? UpdateType.PATCH : UpdateType.MINOR,
       {
         ...this.#movieData,
         userDetails: {
@@ -52,12 +54,12 @@ export default class MoviePresenter {
       });
   };
 
-  #handleWatchlistClick = (updateType) => {
+  #handleWatchlistClick = () => {
     this.#scrollPosition = this.#popupComponent.element.scrollTop;
     this.#handleDataChange(
       UserAction.UPDATE_MOVIE,
-      updateType,
-      {
+      globalPopupState !== PopupState.CLOSED ? UpdateType.PATCH : UpdateType.MINOR,
+       {
         ...this.#movieData,
         userDetails: {
           watchlist: !this.#movieData.userDetails.watchlist,
@@ -68,11 +70,11 @@ export default class MoviePresenter {
       });
   };
 
-  #handleAlreadyWatchedClick = (updateType) => {
+  #handleAlreadyWatchedClick = () => {
     this.#scrollPosition = this.#popupComponent.element.scrollTop;
     this.#handleDataChange(
       UserAction.UPDATE_MOVIE,
-      updateType,
+      globalPopupState !== PopupState.CLOSED ? UpdateType.PATCH : UpdateType.MINOR,
       {
         ...this.#movieData,
         userDetails: {
@@ -88,40 +90,21 @@ export default class MoviePresenter {
     this.#scrollPosition = this.#popupComponent.element.scrollTop;
 
     this.#handleDataChange(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
-      {...this.#movieData,
-        comments: this.#movieData.comments.filter((commentId) => commentId !== comment.id)
-      }
-    );
-
-    this.#handleDataChange(
       UserAction.DELETE_COMMENT,
-      '',
-      comment
+      UpdateType.PATCH,
+      {comment, movie: {...this.#movieData,
+        comments: this.#movieData.comments.filter((commentId) => commentId !== comment.id)
+      }}
     );
   };
 
   #handleFormSubmit = (comment) => {
-    const comments = [...this.#movieData.comments];
-    const id = String(Math.random());
-
     this.#scrollPosition = this.#popupComponent.element.scrollTop;
 
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
-      '',
-      {id:id, author: 'unknown', ...comment, date: '2005-05-11T16:12:32.554Z'},
-    );
-
-    comments.push(id);
-
-    this.#handleDataChange(
-      UserAction.UPDATE_MOVIE,
       UpdateType.PATCH,
-      {...this.#movieData,
-        comments,
-      }
+      {comment, movieId: this.#movieData.id},
     );
   };
 
@@ -192,14 +175,14 @@ export default class MoviePresenter {
   #closePopup() {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
-    this.popupState = PopupState.CLOSED;
+    this.popupState = globalPopupState = PopupState.CLOSED;
     this.#popupComponent.resetPopupNewCommentView();
   }
 
   #showPopup() {
     this.#handlePopupStateChange();
     render(this.#popupComponent, document.body);
-    this.#popupState = PopupState.OPENED;
+    this.#popupState = globalPopupState = PopupState.OPENED;
     document.body.classList.add('hide-overflow');
   }
 }

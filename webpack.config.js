@@ -26,5 +26,8 @@ module.exports = {
           use: ['style-loader', 'css-loader']
         }
     ]
+  },
+  devServer:{
+    allowedHosts: 'all'
   }
 };

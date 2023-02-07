@@ -2,10 +2,7 @@ import AbstractView from '../../framework/view/abstract-view.js';
 
 function createPopupContainerTemplate() {
   return (
-    `<section class="film-details">
-      <div class="film-details__inner">
-      </div>
-    </section>`
+    `<section class="film-details"></section>`
   );
 }
 

@@ -73,6 +73,7 @@ export default class СinemaPresenter {
   }
 
   #renderFilmList() {
+    this.#renderedFilmCardCount = FILM_CARD_COUNT_PER_STEP
     render(this.#contentComponent, this.#mainContainer);
 
     if (this.#isLoading) {

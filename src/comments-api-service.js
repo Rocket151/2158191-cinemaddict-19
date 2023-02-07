@@ -2,17 +2,17 @@ import ApiService from './framework/api-service.js';
 
 const Method = {
   GET: 'GET',
-  POST: 'PUT',
+  POST: 'POST',
   DELETE: 'DELETE',
 };
 
 export default class CommentsApiService extends ApiService {
-  getComments(movieId) {
+  async getComments(movieId) {
     return this._load({url: `comments/${movieId}`})
       .then(ApiService.parseResponse);
   }
 
-  async addComment(movieId, comment) {
+  async addComment({comment, movieId}) {
     const response = await this._load({
       url: `comments/${movieId}`,
       method: Method.POST,
@@ -25,10 +25,11 @@ export default class CommentsApiService extends ApiService {
     return parsedResponse;
   }
 
-  async deleteComment(comment) {
-    return this._load({
-      url: `comments/${comment.id}`,
+  async deleteComment(commentId) {
+    const response = await this._load({
+      url: `comments/${commentId}`,
       method: Method.DELETE,
     });
+    return response
   }
 }
